@@ -4,9 +4,7 @@ import fs from 'q-io/fs';
 import { exec } from 'child_process';
 import os from 'os';
 
-const gitPath = process.platform === 'darwin' ? Promise.resolve('git') :
-  fs.exists('C:\\Program Files\\Git\\bin\\git.exe')
-    .then(x => x ? '"C:\\Program Files\\Git\\bin\\git.exe"' : '"C:\\Program Files (x86)\\Git\\bin\\git.exe"');
+const gitPath = Promise.resolve('git');
 const home = process.platform === 'darwin' ? process.env.HOME : process.env.HOMEDRIVE + process.env.HOMEPATH;
 
 const configFileName = '.clonejs';
