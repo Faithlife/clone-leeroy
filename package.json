@@ -1,6 +1,6 @@
 {
   "name": "clone-leeroy",
-  "version": "0.7.1",
+  "version": "0.8.0",
   "description": "Clones repositories specified in a Leeroy config file.",
   "main": "dist/index.js",
   "bin": "./dist/index.js",
@@ -11,7 +11,8 @@
   "author": "Bradley Grainger <bgrainger@gmail.com>",
   "contributors": [
     "Jacob Carpenter <github@jacobcarpenter.com>",
-    "Jeff Huff <jeff@thehuffs.com>"
+    "Jeff Huff <jeff@thehuffs.com>",
+    "Matt Preucil <mattpsbs@gmail.com>"
   ],
   "license": "MIT",
   "bugs": {
@@ -19,14 +20,17 @@
   },
   "homepage": "https://github.com/bgrainger/clone-leeroy#readme",
   "devDependencies": {
-    "babel": "^5.8.20",
+    "babel": "^6.2.4",
+    "babel-core": "^6.2.1",
+    "babel-preset-es2015": "^6.1.18",
     "gulp": "^3.9.0",
-    "gulp-babel": "^5.2.0",
+    "gulp-babel": "^6.1.1",
     "gulp-batch": "^1.0.5",
-    "gulp-eslint": "^1.0.0",
-    "gulp-watch": "^4.3.4"
+    "gulp-eslint": "^1.1.1",
+    "gulp-watch": "^4.3.5"
   },
   "dependencies": {
+    "argparse": "^1.0.3",
     "q-io": "^1.13.1"
   },
   "engines": {
