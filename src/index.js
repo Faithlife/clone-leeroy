@@ -10,20 +10,16 @@ const home = process.platform === 'darwin' ? process.env.HOME : process.env.HOME
 const configFileName = '.clonejs';
 
 Promise.resolve(process.argv)
-  .then(([, , project, flag]) => {
+  .then(([, , project, ...flags]) => {
+    const parsedFlags = parseFlags(flags);
     if (!project) return readLeeroyConfig();
-    else if (flag === '--save') return createLeeroyConfig(project);
+    else if (parsedFlags.save) return createLeeroyConfig(project);
     else return project;
   })
-  .then(configName => {
-    if (!configName) throw new Error('Usage: clone-leeroy CONFIGNAME [--save]');
-
-    console.log(`Getting ${configName}`);
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-    return http.read(`https://git/raw/Build/Configuration/master/${configName}.json`)
-      .catch(() => {
-        throw new Error(`Couldn't download Leeroy config file: ${configName}`);
-      });
+  .then(project => {
+    if (!project) throw new Error('Usage: clone-leeroy [CONFIGNAME, file, url] [--save]');
+    return fetchProjectConfiguration(project)
+      .catch(() => { throw new Error(`Couldn't get Leeroy config file`); });
   })
   .then(data => {
     const config = JSON.parse(data);
@@ -191,4 +187,53 @@ function exec_git(args, options) {
         }
       });
   }));
+}
+
+function parseFlags(flags) {
+  // --save
+  const parsedFlags = {};
+  for (let flagIndex = 0; flagIndex < (flags || []).length; flagIndex++) {
+    const flag = flags[flagIndex];
+    const flagName = flag.startsWith('--') ? flag.substring(2) : null;
+    if (flagName === 'save') {
+      parsedFlags.save = true;
+    }
+    else {
+      parsedFlags[flagName] = flags[++flagIndex];
+    }
+  }
+  return parsedFlags;
+}
+
+function fetchProjectConfiguration(projectish) {
+  return new Promise( (resolve, reject) => {
+    fs.exists(projectish).then( fileExists => {
+      if (fileExists)
+      {
+        fs.read(projectish).then( data => {
+          console.log(`Read configuration from ${projectish}`);
+          resolve(data);
+        });
+        return;
+      }
+
+      process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+      http
+        .read(projectish)
+        .then(data => {
+          console.log(`Read configuration from ${projectish}`);
+          resolve(data);
+        })
+        .catch(() => {
+          const url = `https://git/raw/Build/Configuration/master/${projectish}.json`;
+          http
+            .read(url)
+            .then(data => {
+              console.log(`Read configuration from ${url}`);
+              resolve(data);
+            })
+            .catch(reject);
+        });
+    });
+  });
 }
