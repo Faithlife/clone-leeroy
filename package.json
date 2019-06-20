@@ -1,6 +1,6 @@
 {
   "name": "clone-leeroy",
-  "version": "0.7.1",
+  "version": "0.8.0",
   "description": "Clones repositories specified in a Leeroy config file.",
   "main": "dist/index.js",
   "bin": "./dist/index.js",
