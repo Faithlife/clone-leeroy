@@ -6,7 +6,15 @@ var batch = require('gulp-batch');
 
 gulp.task('babel', () => {
   return gulp.src(['src/*.js'])
-    .pipe(babel())
+    .pipe(babel({
+      "presets": [
+        ["@babel/preset-env", {
+          "targets": {
+            "node": "8",
+          }
+        }]
+      ]
+    }))
     .pipe(gulp.dest('dist'));
 });
 
@@ -18,9 +26,9 @@ gulp.task('lint', () => {
 });
 
 gulp.task('watch', () => {
-	watch('src/*.js', batch((events, done) => {
-		gulp.start('default', done);
-	}));
+    watch('src/*.js', batch((events, done) => {
+        gulp.start('default', done);
+    }));
 });
 
 gulp.task('default', gulp.series('lint', 'babel'), () => {

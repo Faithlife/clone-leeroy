@@ -20,6 +20,7 @@
   "homepage": "https://github.com/bgrainger/clone-leeroy#readme",
   "devDependencies": {
     "@babel/core": "^7.5.0",
+    "@babel/preset-env": "^7.5.4",
     "@babel/register": "^7.4.4",
     "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
