@@ -1,8 +1,8 @@
-import gulp from 'gulp';
-import babel from 'gulp-babel';
-import eslint from 'gulp-eslint';
-import watch from 'gulp-watch';
-import batch from 'gulp-batch';
+var gulp = require('gulp');
+var babel = require('gulp-babel');
+var eslint = require('gulp-eslint');
+var watch = require('gulp-watch');
+var batch = require('gulp-batch');
 
 gulp.task('babel', () => {
   return gulp.src(['src/*.js'])
@@ -23,6 +23,6 @@ gulp.task('watch', () => {
 	}));
 });
 
-gulp.task('default', ['lint', 'babel'], () => {
+gulp.task('default', gulp.series('lint', 'babel'), () => {
   console.log('Success!');
 });

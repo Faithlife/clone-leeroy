@@ -81,9 +81,7 @@ function createSolutionInfos() {
   }];
 
   return Promise.all(solutionInfos.map(info => fs.exists(info.name)
-    .then(exists => {
-      if (!exists) return fs.write(info.name, info.data);
-    })
+    .then(exists => exists || fs.write(info.name, info.data))
   ));
 }
 
@@ -130,7 +128,9 @@ function checkRemote(submodule) {
       if (currentRemoteUrl !== submodule.remoteUrl) {
         submodule.log(`Changing origin URL from ${currentRemoteUrl} to ${submodule.remoteUrl}`, 2);
         return changeRemoteUrl(submodule);
-      }
+      } else {
+        return null;
+    }
     });
 }
 
@@ -157,6 +157,8 @@ function checkBranch(submodule) {
               return exec_git(`checkout ${submodule.branch}`, { cwd: submodule.repo });
             }
           });
+        } else {
+          return null;
         }
       });
 }
