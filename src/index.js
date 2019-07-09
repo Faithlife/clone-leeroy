@@ -1,15 +1,24 @@
 #!/usr/bin/env node
 import http from 'q-io/http';
 import fs from 'q-io/fs';
+import keytar from 'keytar';
 import { exec } from 'child_process';
+import readline from 'readline';
 import os from 'os';
 
 const gitPath = Promise.resolve('git');
 const home = process.platform === 'darwin' ? process.env.HOME : process.env.HOMEDRIVE + process.env.HOMEPATH;
-
 const configFileName = '.clonejs';
+const keytarService = 'clone-leeroy';
+const keytarAccount = 'github-token';
+let gitHubAccessToken = '';
 
-Promise.resolve(process.argv)
+getGitHubAccessToken()
+  .then(token => {
+    if (!token) throw new Error('GitHub Personal Access Token was not specified.');
+    gitHubAccessToken = token;
+    return process.argv;
+  })
   .then(([, , project, ...flags]) => {
     const parsedFlags = parseFlags(flags);
     if (!project) return readLeeroyConfig();
@@ -37,6 +46,38 @@ Promise.resolve(process.argv)
     console.error('\x1b[31m' + (error.message || `Error: ${error}`) + '\x1b[0m');
     process.exitCode = 1;
   });
+
+function getGitHubAccessToken() {
+  const gitHubAccessToken = process.env.GITHUB_TOKEN;
+  if (gitHubAccessToken) return Promise.resolve(gitHubAccessToken);
+  return keytar.getPassword(keytarService, keytarAccount)
+    .then(token =>
+      {
+        if (token) return token;
+        return new Promise((resolve, reject) => {
+          console.error(`A GitHub Personal Access Token is required. You can specify this with the
+GITHUB_TOKEN environment variable, or enter one now (which will be saved
+securely in your keychain).
+To create a PAT, go to https://git/settings/tokens and create one named
+'clone-leeroy' with 'public_repo' permissions.`);
+
+          const rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout
+          });
+
+          rl.question('Enter token or press Ctrl+C to use an environment variable: ', (enteredToken) => {
+            rl.close();
+            if (!enteredToken) {
+              reject('GitHub Personal Access Token is required');
+            } else {
+              resolve(keytar.setPassword(keytarService, keytarAccount, enteredToken)
+                .then(() => enteredToken));
+            }
+          });
+        });
+      });
+}
 
 function readLeeroyConfig() {
   return fs.read(configFileName)
@@ -229,12 +270,22 @@ function fetchProjectConfiguration(projectish) {
         .catch(() => {
           const url = `https://git/raw/Build/Configuration/master/${projectish}.json`;
           http
-            .read(url)
+            .read({
+              url,
+              headers: {
+                'Accept': 'application/vnd.github.v3.raw',
+                'Authorization': 'token ' + gitHubAccessToken
+              }
+            })
             .then(data => {
               console.log(`Read configuration from ${url}`);
               resolve(data);
             })
-            .catch(reject);
+            .catch(err => {
+              console.error('Couldn\'t read Leeroy configuration from GitHub; is your GitHub PAT correct?');
+              keytar.deletePassword(keytarService, keytarAccount)
+                .then(() => reject(err));
+            });
         });
     });
   });
