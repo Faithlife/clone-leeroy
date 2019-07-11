@@ -13,6 +13,8 @@ const keytarService = 'clone-leeroy';
 const keytarAccount = 'github-token';
 let gitHubAccessToken = '';
 
+console.log('clone-leeroy 0.10.0');
+
 getGitHubAccessToken()
   .then(token => {
     if (!token) throw new Error('GitHub Personal Access Token was not specified.');
@@ -48,8 +50,8 @@ getGitHubAccessToken()
   });
 
 function getGitHubAccessToken() {
-  const gitHubAccessToken = process.env.GITHUB_TOKEN;
-  if (gitHubAccessToken) return Promise.resolve(gitHubAccessToken);
+  const environmentToken = process.env.GITHUB_TOKEN;
+  if (environmentToken) return Promise.resolve(environmentToken);
   return keytar.getPassword(keytarService, keytarAccount)
     .then(token =>
       {
@@ -260,7 +262,6 @@ function fetchProjectConfiguration(projectish) {
         return;
       }
 
-      process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
       http
         .read(projectish)
         .then(data => {
@@ -268,7 +269,7 @@ function fetchProjectConfiguration(projectish) {
           resolve(data);
         })
         .catch(() => {
-          const url = `https://git/raw/Build/Configuration/master/${projectish}.json`;
+          const url = `https://raw.git.faithlife.dev/Build/Configuration/master/${projectish}.json`;
           http
             .read({
               url,
