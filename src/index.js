@@ -13,7 +13,7 @@ const keytarService = 'clone-leeroy';
 const keytarAccount = 'github-token';
 let gitHubAccessToken = '';
 
-console.log('clone-leeroy 0.10.0');
+console.log('clone-leeroy 0.10.1');
 
 getGitHubAccessToken()
   .then(token => {
@@ -60,8 +60,8 @@ function getGitHubAccessToken() {
           console.error(`A GitHub Personal Access Token is required. You can specify this with the
 GITHUB_TOKEN environment variable, or enter one now (which will be saved
 securely in your keychain).
-To create a PAT, go to https://git/settings/tokens and create one named
-'clone-leeroy' with 'public_repo' permissions.`);
+To create a PAT, go to https://git.faithlife.dev/settings/tokens and create
+one named 'clone-leeroy' with 'public_repo' permissions.`);
 
           const rl = readline.createInterface({
             input: process.stdin,
@@ -137,7 +137,7 @@ function processSubmodule(name, config) {
     owner,
     repo,
     branch,
-    remoteUrl: `git@git:${owner}/${repo}.git`,
+    remoteUrl: `git@git.faithlife.dev:${owner}/${repo}.git`,
     log(message, indent=0) { this._logs = this._logs.concat(message.split(/\r?\n/).map((line) => { return Array(indent + 1).join(' ') + line; })); },
     output() { return this._logs.join(os.EOL); }
   };
