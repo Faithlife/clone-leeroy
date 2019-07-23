@@ -189,19 +189,17 @@ function checkBranch(submodule) {
   const gitOptions = { cwd: submodule.repo }
   return exec_git('symbolic-ref --short -q HEAD', gitOptions)
     .then(currentBranch => {
-      if (currentBranch !== submodule.branch) {
-        submodule.log(`Switching branches from ${currentBranch} to ${submodule.branch}`, 2);
-        return exec_git(`branch --list -q --no-color ${submodule.branch}`, gitOptions)
-          .then(existingTargetBranch => {
-            if (existingTargetBranch !== submodule.branch) {
-              return checkoutAndTrackNewBranch(submodule);
-            } else {
-              return checkoutBranch(submodule);
-            }
-          });
-        } else {
-          return null;
-        }
+      if (currentBranch === submodule.branch)
+        return null;
+      submodule.log(`Switching branches from ${currentBranch} to ${submodule.branch}`, 2);
+      return exec_git(`branch --list -q --no-color ${submodule.branch}`, gitOptions)
+        .then(existingTargetBranch => {
+          if (existingTargetBranch !== submodule.branch) {
+            return checkoutAndTrackNewBranch(submodule);
+          } else {
+            return checkoutBranch(submodule);
+          }
+        })
       });
 }
 
