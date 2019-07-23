@@ -188,29 +188,28 @@ function fetchOrigin(submodule) {
 }
 
 function checkBranch(submodule) {
-  const gitOptions = { cwd: submodule.repo }
+  const gitOptions = { cwd: submodule.repo };
   return exec_git('symbolic-ref --short -q HEAD', gitOptions)
     .then(currentBranch => {
-      if (currentBranch === submodule.branch)
-        return null;
+      if (currentBranch === submodule.branch) return null;
       submodule.log(`Switching branches from ${currentBranch} to ${submodule.branch}`, 2);
       return exec_git(`branch --list -q --no-color ${submodule.branch}`, gitOptions)
         .then(existingTargetBranch => checkoutBranch(submodule, existingTargetBranch === submodule.branch))
         .catch(err => fetchTags(submodule)
           .then(() => checkoutBranch(submodule))
-          .catch(() => submodule.log(err)))
+          .catch(() => submodule.log(err)));
     });
 }
 
 function checkoutBranch(submodule, isNewBranch) {
   const command = isNewBranch
     ? `checkout -B ${submodule.branch} --track origin/${submodule.branch}`
-    : `checkout ${submodule.branch}`
+    : `checkout ${submodule.branch}`;
   return exec_git(command, { cwd: submodule.repo });
 }
 
 function fetchTags(submodule) {
-  return exec_git(`fetch --tags`, { cwd: submodule.repo })
+  return exec_git(`fetch --tags`, { cwd: submodule.repo });
 }
 
 function pull(submodule) {
