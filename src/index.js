@@ -13,7 +13,7 @@ const keytarService = 'clone-leeroy';
 const keytarAccount = 'github-token';
 let gitHubAccessToken = '';
 
-console.log('clone-leeroy 0.10.3');
+console.log('clone-leeroy 0.11.0');
 
 getGitHubAccessToken()
   .then(token => {
