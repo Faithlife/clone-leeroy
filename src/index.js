@@ -193,22 +193,17 @@ function checkBranch(submodule) {
         return null;
       submodule.log(`Switching branches from ${currentBranch} to ${submodule.branch}`, 2);
       return exec_git(`branch --list -q --no-color ${submodule.branch}`, gitOptions)
-        .then(existingTargetBranch => {
-          if (existingTargetBranch !== submodule.branch) {
-            return checkoutAndTrackNewBranch(submodule);
-          } else {
-            return checkoutBranch(submodule);
-          }
-        })
+        .then(existingTargetBranch => checkoutBranch(submodule, existingTargetBranch === submodule.branch))
       });
 }
 
-function checkoutAndTrackNewBranch(submodule) {
-  return exec_git(`checkout -B ${submodule.branch} --track origin/${submodule.branch}`, { cwd: submodule.repo });
+function checkoutBranch(submodule, isNewBranch) {
+  const command = isNewBranch
+    ? `checkout -B ${submodule.branch} --track origin/${submodule.branch}`
+    : `checkout ${submodule.branch}`
+  return exec_git(command, { cwd: submodule.repo });
 }
 
-function checkoutBranch(submodule) {
-  return exec_git(`checkout ${submodule.branch}`, { cwd: submodule.repo });
 }
 
 function pull(submodule) {
