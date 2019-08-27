@@ -1,6 +1,6 @@
 {
   "name": "clone-leeroy",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "description": "Clones repositories specified in a Leeroy config file.",
   "main": "dist/index.js",
   "bin": "./dist/index.js",
@@ -19,9 +19,9 @@
   },
   "homepage": "https://github.com/bgrainger/clone-leeroy#readme",
   "devDependencies": {
-    "@babel/core": "^7.5.4",
-    "@babel/preset-env": "^7.5.4",
-    "@babel/register": "^7.4.4",
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/register": "^7.5.5",
     "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
     "gulp-batch": "^1.0.5",
@@ -29,7 +29,7 @@
     "gulp-watch": "^5.0.1"
   },
   "dependencies": {
-    "keytar": "^4.11.0",
+    "keytar": "^4.13.0",
     "q-io": "^1.13.6"
   },
   "engines": {
